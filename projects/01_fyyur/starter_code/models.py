@@ -1,20 +1,6 @@
-from flask import Flask
-from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 
-
-#----------------------------------------------------------------------------#
-# App Config.
-#----------------------------------------------------------------------------#
-
-app = Flask(__name__)
-moment = Moment(app)
-app.config.from_object('config')
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-# TODO: connect to a local postgresql database.. Done
-
+db = SQLAlchemy()
 
 #----------------------------------------------------------------------------#
 # Models.
@@ -30,7 +16,7 @@ class Venue(db.Model):
     address = db.Column(db.String(120), nullable=False)
     phone = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
-    genres = db.Column(db.String(500))
+    genres = db.Column(db.ARRAY(db.String), nullable=True)
     facebook_link = db.Column(db.String(120))
     website_link = db.Column(db.String(120))
     seeking_talent = db.Column(db.Boolean, default=True)
@@ -47,11 +33,11 @@ class Artist(db.Model):
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
     phone = db.Column(db.String(120))
-    genres = db.Column(db.String(120), nullable=False)
+    genres = db.Column(db.ARRAY(db.String), nullable=True)
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
     website_link = db.Column(db.String(120))
-    seeking_venues = db.Column(db.Boolean, default=True)
+    seeking_venue = db.Column(db.Boolean, default=True)
     seeking_description = db.Column(db.String(250))
     shows = db.relationship('Show', backref='artist', cascade="all,delete", lazy=True)
 
