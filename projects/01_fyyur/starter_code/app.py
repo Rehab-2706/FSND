@@ -6,12 +6,32 @@ import json
 from datetime import datetime
 import dateutil.parser
 import babel
-from flask import (render_template, request, Response, flash, redirect, url_for)
+from flask import (
+    Flask, 
+    render_template, 
+    request, 
+    Response, 
+    flash, 
+    redirect, 
+    url_for
+)
 import logging
 from logging import Formatter, FileHandler
-from flask_wtf import Form
+from flask_migrate import Migrate
+from flask_moment import Moment
+from flask_wtf import FlaskForm as Form
 from forms import *
 from models import *
+
+#----------------------------------------------------------------------------#
+# App Config.
+#----------------------------------------------------------------------------#
+
+app = Flask(__name__)
+app.config.from_object('config')
+moment = Moment(app)
+db.init_app(app)
+migrate = Migrate(app, db)
 
 #----------------------------------------------------------------------------#
 # Filters.
@@ -100,7 +120,7 @@ def show_venue(venue_id):
         past_shows.append({
           "venue_id": show.venue_id,
           "venue_name": show.venue.name,
-          "venue_image_link": show.venue.image_link,
+          "venue_image_link": show.artist.image_link,
           "start_time": str(show.start_time)
         })
 
@@ -108,7 +128,7 @@ def show_venue(venue_id):
         upcoming_shows.append({
           "venue_id": show.venue_id,
           "venue_name": show.venue.name,
-          "venue_image_link": show.venue.image_link,
+          "venue_image_link": show.artist.image_link,
           "start_time": str(show.start_time)
         })
 
@@ -244,6 +264,7 @@ def show_artist(artist_id):
 
     past_shows = []
     upcoming_shows = []
+    artist_details= []
 
     for show in past_shows_query:
         past_shows.append({
@@ -271,7 +292,7 @@ def show_artist(artist_id):
       "website": artist.website_link,
       "image_link": artist.image_link,
       "facebook_link": artist.facebook_link,
-      "seeking_venues": artist.seeking_venues,
+      "seeking_venue": artist.seeking_venue,
       "seeking_description": artist.seeking_description,
       "past_shows": past_shows,
       "upcoming_shows": upcoming_shows,
@@ -288,20 +309,22 @@ def show_artist(artist_id):
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
     artist_data = request.form
-    form =  ArtistForm(artist_details)
+    form =  ArtistForm(artist_data)
 
     try:
         artist = Artist.query.get(artist_id)
-        artist.name = artist_data.get('name')
-        artist.city = artist_data.get('city')
-        artist.state = artist_data.get('state')
-        artist.phone = artist_data.get('phone')
-        artist.genres = artist_data.getlist('genres')
-        artist.image_link = artist_data.get('image_link')
-        artist.facebook_link = artist_data.get('facebook_link')
-        artist.website_link = artist_data.get('website_link')
-        artist.seeking_venues = artist_data.get('seeking_venues')
-        artist.seeking_description = artist_data.get('seeking_description')
+        artist.name=form.name.data
+        artist.city=form.city.data
+        artist.state=form.state.data
+        artist.phone=form.phone.data
+        artist.genres=form.genres.data
+        artist.image_link=form.image_link.data
+        artist.facebook_link=form.facebook_link.data
+        artist.website_link=form.website_link.data
+        artist.seeking_venue=form.seeking_venue.data
+        artist.seeking_description=form.seeking_description.data
+        artist.city=form.city.data
+        artist.city=form.city.data
         db.session.commit()
         flash('Artist ' + request.form['name'] + ' was successfully updated!')
 
@@ -327,7 +350,7 @@ def edit_artist(artist_id):
     form.image_link.data = artist.image_link
     form.website_link.data = artist.website_link
     form.facebook_link.data = artist.facebook_link
-    form.seeking_venues.data = artist.seeking_venues
+    form.seeking_venue.data = artist.seeking_venue
     form.seeking_description.data = artist.seeking_description
 
   # TODO: populate form with fields from artist with ID <artist_id>.. Done
@@ -336,8 +359,8 @@ def edit_artist(artist_id):
 
 @app.route('/venues/<int:venue_id>/edit', methods=['GET'])
 def edit_venue(venue_id):
-    form = VenueForm()
     venue = Venue.query.get(venue_id)
+    form = VenueForm(venue)
 
     form.name.data = venue.name
     form.city.data = venue.city
