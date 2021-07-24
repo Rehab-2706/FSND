@@ -27,10 +27,10 @@ class QuestionView extends Component {
       type: "GET",
       success: (result) => {
         this.setState({
-          questions: result.questions,
-          totalQuestions: result.total_questions,
-          categories: result.categories,
-          currentCategory: result.current_category })
+          questions: result.Questions,
+          totalQuestions: result.total_Questions,
+          categories: result.Current_category,
+          currentCategory: result.Current_category})
         return;
       },
       error: (error) => {
@@ -64,9 +64,9 @@ class QuestionView extends Component {
       type: "GET",
       success: (result) => {
         this.setState({
-          questions: result.questions,
-          totalQuestions: result.total_questions,
-          currentCategory: result.current_category })
+          questions: result.Questions,
+          totalQuestions: result.total_Questions,
+          currentCategory: result.Current_category})
         return;
       },
       error: (error) => {
@@ -76,21 +76,21 @@ class QuestionView extends Component {
     })
   }
 
-  submitSearch = (searchTerm) => {
+  submitSearch = (search_term) => {
     $.ajax({
-      url: `/questions`, //TODO: update request URL
+      url: `/questions/search`, //TODO: update request URL
       type: "POST",
       dataType: 'json',
       contentType: 'application/json',
-      data: JSON.stringify({searchTerm: searchTerm}),
+      data: JSON.stringify({search_term: search_term}),
       xhrFields: {
         withCredentials: true
       },
       crossDomain: true,
       success: (result) => {
         this.setState({
-          questions: result.questions,
-          totalQuestions: result.total_questions,
+          questions: result.Questions,
+          totalQuestions: result.total_Questions,
           currentCategory: result.current_category })
         return;
       },
