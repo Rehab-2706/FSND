@@ -16,7 +16,7 @@ class Venue(db.Model):
     address = db.Column(db.String(120), nullable=False)
     phone = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
-    genres = db.Column(db.ARRAY(db.String), nullable=True)
+    genres = db.Column(db.ARRAY(db.String(120)))
     facebook_link = db.Column(db.String(120))
     website_link = db.Column(db.String(120))
     seeking_talent = db.Column(db.Boolean, default=True)
@@ -33,7 +33,7 @@ class Artist(db.Model):
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
     phone = db.Column(db.String(120))
-    genres = db.Column(db.ARRAY(db.String), nullable=True)
+    genres = db.Column(db.ARRAY(db.String(120)))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
     website_link = db.Column(db.String(120))
@@ -54,4 +54,3 @@ class Show(db.Model):
     def __repr__(self):
       return f'<Show : {self.id}>'
 
-  # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.. Done
